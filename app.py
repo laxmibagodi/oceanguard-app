@@ -1,3 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -155,18 +158,32 @@ def random_ocean_coord():
 # ══════════════════════════════════════════════
 # LOAD MODEL
 # ══════════════════════════════════════════════
+# @st.cache_resource
+# def load_model():
+#     for path in ["models/oceanguard_v3.keras",
+#                  "models/oceanguard_v2.keras",
+#                  "models/oceanguard_v1.keras"]:
+#         if os.path.exists(path):
+#             try:
+#                 return tf.keras.models.load_model(path), path
+#             except:
+#                 continue
+#     return None, None
 @st.cache_resource
 def load_model():
-    for path in ["models/oceanguard_v3.keras",
-                 "models/oceanguard_v2.keras",
-                 "models/oceanguard_v1.keras"]:
-        if os.path.exists(path):
-            try:
-                return tf.keras.models.load_model(path), path
-            except:
-                continue
-    return None, None
-
+    MODEL_PATH = "models/oceanguard_v3.keras"
+    os.makedirs("models", exist_ok=True)
+    
+    if not os.path.exists(MODEL_PATH):
+        with st.spinner("📥 Downloading model..."):
+            url = "https://drive.google.com/uc?id=1GgEb5N-k5pZCTyLV1fu2km4XbSoHEy_e"
+            gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
+    
+    try:
+        return tf.keras.models.load_model(MODEL_PATH, compile=False), MODEL_PATH
+    except Exception as e:
+        st.error(f"❌ Model load failed: {e}")
+        return None, None
 model, model_path = load_model()
 
 

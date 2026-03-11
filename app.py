@@ -155,33 +155,17 @@ def random_ocean_coord():
 # ══════════════════════════════════════════════
 # LOAD MODEL
 # ══════════════════════════════════════════════
-# @st.cache_resource
-# def load_model():
-#     for path in ["models/oceanguard_v3.keras",
-#                  "models/oceanguard_v2.keras",
-#                  "models/oceanguard_v1.keras"]:
-#         if os.path.exists(path):
-#             try:
-#                 return tf.keras.models.load_model(path), path
-#             except:
-#                 continue
-#     return None, None
-
 @st.cache_resource
 def load_model():
-    MODEL_PATH = "models/oceanguard_v3.h5"
-    os.makedirs("models", exist_ok=True)
-    
-    if not os.path.exists(MODEL_PATH):
-        with st.spinner("📥 Downloading model... (224MB, please wait)"):
-            url = "https://drive.google.com/uc?id=14j4fp5K4MKcB3Z7OjDXB-tk5dtvt_5W9"
-            gdown.download(url, MODEL_PATH, quiet=False)
-    
-    try:
-        return tf.keras.models.load_model(MODEL_PATH, compile=False), MODEL_PATH
-    except Exception as e:
-        st.error(f"❌ Model load failed: {e}")
-        return None, None
+    for path in ["models/oceanguard_v3.keras",
+                 "models/oceanguard_v2.keras",
+                 "models/oceanguard_v1.keras"]:
+        if os.path.exists(path):
+            try:
+                return tf.keras.models.load_model(path), path
+            except:
+                continue
+    return None, None
 
 model, model_path = load_model()
 
